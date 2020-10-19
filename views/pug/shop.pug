@@ -1,0 +1,18 @@
+extends layouts/main-layout.pug
+block style
+
+block content
+  main.p-3
+    h1 我的產品
+    if prods.length > 0
+      div.row.justify-content-center
+        each products in prods
+          div.card.m-1(style="width: 18rem")
+            img.card-img-top(src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" alt="...")
+            div.card-body
+              h5.card-title 產品名稱#{products.title}
+              p.card-text 產品介紹產品介紹產品介紹產品介紹產品介紹產品介紹產品介紹
+              p.card-text $560
+              a.btn.btn-primary(href="#") 加入購物車
+    else 
+      div.alert.alert-danger 暫無產品
