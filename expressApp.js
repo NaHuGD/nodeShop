@@ -5,21 +5,32 @@ const app = express()
 const path = require('path')
 // controllers
 const errorControllers = require('./controllers/error')
+// 引入mysql db
+const db = require('./util/database')
 
 // express-handlebars
 const expressHbs = require('express-handlebars')
 
-//引入 自訂模塊
+// 引入 自訂模塊
 const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
-// pug 模塊引擎
-app.set('view engine', 'pug')
-app.set('views', path.join(__dirname, 'views', 'pug'))
 
-// express-handlebars 模塊引擎
-app.engine('hbs', expressHbs({extname: '.hbs'}))
-app.set('view engine', 'hbs')
-app.set('views', path.join(__dirname, 'views', 'handlebars'))
+// 取得mysql連結資料
+// db.getConnection().then(connect => {
+//   // SQL語法 => 取得資料
+//   const res = connect.query('SELECT * FROM products')
+//   connect.release()
+//   return res
+// }).then(result => {
+//   console.log(result)
+// })
+db.execute('SELECT * FROM `nodejs-shop`.products')
+.then((result) => {
+  console.log('成功', result)
+  return result
+}).catch((err) => {
+  console.log('錯誤', err)
+})
 
 // EJS模塊引擎
 app.set('view engine' ,'ejs')
@@ -34,4 +45,4 @@ app.use('/admin', adminRoutes)
 
 app.use(errorControllers.getError)
 
-app.listen(3001, '127.0.0.1')
+app.listen(3000)

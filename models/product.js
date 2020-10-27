@@ -3,6 +3,8 @@ const path = require('path')
 const fs = require('fs')
 const dirPath = path.join(rootDir, 'data')
 const filePath = path.join(dirPath, 'product.json')
+// 引入uuid
+const { v4: uuidv4 } = require('uuid')
 
 const getProductsFromFile = (callback) => {
   Product.checkFile().then(result => {
@@ -20,34 +22,36 @@ const getProductsFromFile = (callback) => {
 }
 
 class Product {
-  constructor(t) {
-    this.title = t
+  constructor(title, imgUrl, description, price) {
+    this.title = title;
+    this.imgUrl = imgUrl;
+    this.description = description;
+    this.price = price;
   }
 
-  save() {
-    // 確認是否有文件
-    // this.constructor.checkFile().then(result => {
-    //   if (result) {
-    //     let products = []
-    //     fs.readFile(filePath, (err, data) => {
-    //       if (err) {
-    //         products = JSON.parse(data)
-    //       }
-    //     })
-    //     products.push(this)
+  save = (productId) => {
+    if (!productId) {
+      // 沒有productId參數則新增商品
+      this.id = uuidv4()
+      getProductsFromFile((products) => {
+        products.push(this)
 
-    //     fs.writeFile(filePath, JSON.stringify(products), (err) => {
-    //       console.log(err)
-    //     })
-    //   }
-    // })
-    getProductsFromFile(products => {
-      products.push(this)
-
-      fs.writeFile(filePath, JSON.stringify(products), (err) => {
-        console.log(err)
+        fs.writeFile(filePath, JSON.stringify(products), (err) => {
+          console.log(err)
+        })
       })
-    })
+    } else {
+      // 有id則進行修改
+      getProductsFromFile((products) => {
+        const existingProductIndex = products.findIndex(prod => prod.id === productId)
+        const updateProducts = [...products]
+
+        updateProducts[existingProductIndex] = { ...updateProducts[existingProductIndex], ...this }
+        fs.writeFile(filePath, JSON.stringify(updateProducts), (err) => {
+          console.log(err)
+        })
+      })
+    }
   }
 
   static checkFile = () => {
@@ -72,8 +76,27 @@ class Product {
     return promise
   }
 
-  static fetchAll(callback) {
+  static fetchAll = (callback) => {
     getProductsFromFile(callback)
+  }
+
+  static findById = (id, cacllBack) => {
+    getProductsFromFile(products => {
+      // 比對傳遞的id與產品id
+      const product = products.find(p => p.id === id)
+      cacllBack(product)
+    })
+  }
+
+  static deleteById = (id) => {
+    getProductsFromFile((products) => {
+      // id相同的產品=>刪除，不相同的保留
+      const updateProducts = products.filter(prod => prod.id !== id)
+
+      fs.writeFile(filePath, JSON.stringify(updateProducts), err => {
+        console.log('刪除', err)
+      })
+    })
   }
 
 }

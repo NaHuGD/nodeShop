@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../includes/head.ejs') %>
+
+<body>
+  <%- include('../includes/navBar.ejs') %>
+  <main class="container">
+    <% if(cartProducts.length > 0) { %>
+    <ul class="list-unstyled">
+      <% cartProducts.forEach(function(item) { %>
+      <li class="media align-items-center">
+        <img src="<%= item.imgUrl %>" class="mr-3" style="width: 100px" alt="<%= item.title %>">
+        <div class="media-body">
+          <h5><%= item.title %></h5>
+          <p class="m-0"><%= item.description %></p>
+          <small><span>數量:<%= item.qty %></span>/$<%= item.price %></small>
+          <form action="/cart-delete-product" method="post">
+            <input type="hidden" name="productId" value="<%- item.id %>" />
+            <button type="submit" class="btn btn-danger">刪除產品</button>
+          </form>
+        </div>
+      </li>
+      <hr></hr>
+      <% }) %>
+    </ul>
+    <div>總價<%= totalPrice %></div>
+    <% } else { %>
+    <h3>暫無購物車商品</h3>
+    <% } %>
+  </main>
+  <%- include('../includes/script.ejs') %>
+</body>
+
+</html>

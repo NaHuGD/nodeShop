@@ -36,7 +36,6 @@ const rqListener = (req, res) => {
     })
     return req.on('end', () => {
       const parseBody = Buffer.concat(body)
-      console.log(parseBody.toString())
       const message = parseBody.toString()
       message.split('=')[0]
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../includes/head.ejs') %>
+
+<body>
+  <%- include('../includes/navBar.ejs') %>
+  <main class="container pt-3">
+    <form 
+      action="/admin/<% if(editing){ %>edit-product/<% } else {%>add-product<% } %>"
+      method="post"
+    >
+      <div class="form-group">
+        <label for="title">產品標題</label>
+        <input
+          class="form-control"
+          type="text"
+          name="title"
+          id="title"
+          placeholder="請輸入標題內容"
+          value="<% if(editing) {%><%=product.title%><% }%>"
+        />
+      </div>
+      <div class="form-group">
+        <label for="imgUrl">產品圖片</label>
+        <input
+          class="form-control"
+          type="text"
+          name="imgUrl"
+          id="imgUrl"
+          placeholder="請輸入產品圖片路徑"
+          value="<% if(editing) {%><%=product.imgUrl%><% }%>"
+        />
+      </div>
+      <div class="form-group">
+        <label for="price">產品價格</label>
+        <input
+          class="form-control"
+          type="number"
+          name="price"
+          id="price"
+          placeholder="請輸入產品價格"
+          value="<% if(editing) {%><%=product.price%><% }%>"
+        />
+      </div>
+      <div class="form-group">
+        <label for="description">產品介紹</label>
+        <input
+          class="form-control"
+          type="text"
+          name="description"
+          id="description"
+          placeholder="請輸入產品介紹"
+          value="<% if(editing) {%><%=product.description%><% }%>"
+        />
+      </div>
+      <% if(editing) { %>
+        <input type="hidden" name="productId" id="productId" value="<%= product.id %>" />
+      <% } %>
+      <button type="submit" class="btn btn-primary">
+        <% if(editing) {%>
+          編輯產品
+        <% } else {%>
+          新增商品
+        <% } %>
+      </button>
+    </form>
+  </main>
+  <%- include('../includes/script.ejs') %>
+</body>
+
+</html>
