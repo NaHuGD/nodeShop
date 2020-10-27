@@ -1,25 +1,4 @@
-const rootDir = require('../util/path')
-const path = require('path')
-const fs = require('fs')
-const dirPath = path.join(rootDir, 'data')
-const filePath = path.join(dirPath, 'product.json')
-// 引入uuid
-const { v4: uuidv4 } = require('uuid')
-
-const getProductsFromFile = (callback) => {
-  Product.checkFile().then(result => {
-    if (result) {
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          callback([])
-        } else {
-          // 讀取正確
-          callback(JSON.parse(data))
-        }
-      })
-    }
-  })
-}
+const db = require('../util/dataBase')
 
 class Product {
   constructor(title, imgUrl, description, price) {
@@ -29,74 +8,36 @@ class Product {
     this.price = price;
   }
 
-  save = (productId) => {
-    if (!productId) {
-      // 沒有productId參數則新增商品
-      this.id = uuidv4()
-      getProductsFromFile((products) => {
-        products.push(this)
-
-        fs.writeFile(filePath, JSON.stringify(products), (err) => {
-          console.log(err)
-        })
-      })
-    } else {
-      // 有id則進行修改
-      getProductsFromFile((products) => {
-        const existingProductIndex = products.findIndex(prod => prod.id === productId)
-        const updateProducts = [...products]
-
-        updateProducts[existingProductIndex] = { ...updateProducts[existingProductIndex], ...this }
-        fs.writeFile(filePath, JSON.stringify(updateProducts), (err) => {
-          console.log(err)
-        })
-      })
-    }
+  save = () => {
+    const title = this.title;
+    const imgUrl =this.imgUrl;
+    const description = this.description;
+    const price = this.price;
+    // mysql新增產品
+    // return db.execute(`INSERT INTO products (title, imgUrl, description, price) VALUES (${title}, ${imgUrl}, ${description}, ${price})`)
+    return db.execute(`INSERT INTO products (title, imgUrl, description, price) VALUES (?, ?, ?, ?)`, [
+      title,
+      imgUrl,
+      description,
+      price
+    ])
   }
 
-  static checkFile = () => {
-    const promise = new Promise((res, rej) => {
-      // 確認該目錄是否存在
-      fs.exists(dirPath, result => {
-        if (!result) {
-          // 不存在目錄時創建
-          fs.mkdir(dirPath, err => {
-            if (!err) {
-              // 寫入一個 []
-              fs.writeFile(filePath, '[]', err => {
-                res(true)
-              })
-            }
-          })
-        } else {
-          res(true)
-        }
-      })
+  static fetchAll = () => {
+    // 取得資料庫資料
+    return db.execute('SELECT * FROM `nodejs-shop`.products').then(result => {
+      return result[0]
     })
-    return promise
   }
 
-  static fetchAll = (callback) => {
-    getProductsFromFile(callback)
-  }
-
-  static findById = (id, cacllBack) => {
-    getProductsFromFile(products => {
-      // 比對傳遞的id與產品id
-      const product = products.find(p => p.id === id)
-      cacllBack(product)
-    })
+  static findById = (id) => {
+    // 查詢mysql符合關鍵字
+    return db.execute('SELECT * FROM products WHERE id = ?', [id])
   }
 
   static deleteById = (id) => {
-    getProductsFromFile((products) => {
-      // id相同的產品=>刪除，不相同的保留
-      const updateProducts = products.filter(prod => prod.id !== id)
-
-      fs.writeFile(filePath, JSON.stringify(updateProducts), err => {
-        console.log('刪除', err)
-      })
-    })
+    console.log(id)
+    return db.execute('DELETE FROM products WHERE id = ?', [id])
   }
 
 }

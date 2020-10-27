@@ -2,7 +2,8 @@ const Product = require('../models/product')
 const Cart = require('../models/cart')
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll(products => {
+  // ([]) 解構用法
+  Product.fetchAll().then(products => {
     res.render('shop/index', {
       prods: products,
       title: '首頁',
@@ -12,7 +13,7 @@ exports.getIndex = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll(products => {
+  Product.fetchAll().then(products => { 
     res.render('shop/product-list', {
       prods: products,
       title: '產品中心',
@@ -70,14 +71,12 @@ exports.postAddToCart = (req, res, next) => {
 exports.getProductDetail = (req, res, next) => {
   const productId = req.params.productId
 
-  Product.findById(productId, (product) => {
-
+  Product.findById(productId).then(([row, fileData]) => {
     res.render('shop/product-detail', {
       title: '產品詳情',
-      product,
+      product: row[0],
       activeProductList: true
     })
-
   })
 }
 

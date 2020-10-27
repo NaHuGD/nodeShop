@@ -26,7 +26,6 @@ const shopRoutes = require('./routes/shop')
 // })
 db.execute('SELECT * FROM `nodejs-shop`.products')
 .then((result) => {
-  console.log('成功', result)
   return result
 }).catch((err) => {
   console.log('錯誤', err)
