@@ -1,14 +1,9 @@
-const mysql = require('mysql2')
+const { Sequelize } = require('sequelize')
 
-// 連結mySql資料庫
-// host主機地址
-// user用戶名稱
-// database連結數據庫
-const pool = mysql.createPool({
+const sequelize = new Sequelize('nodejs-shop', 'root', 'Bb27955439', { 
+  dialect: 'mysql',
   host: 'localhost',
-  user: 'root',
-  password: 'Bb27955439',
-  database: 'nodejs-shop'
+  timezone: '+08:00',
 })
 
-module.exports = pool.promise()
+module.exports = sequelize

@@ -14,6 +14,9 @@ router.get('/product-detail/:productId', shopController.getProductDetail)
 router.get('/cart', shopController.getCart)
 // 添加購物車
 router.post('/add-to-cart', shopController.postAddToCart)
+// 生成訂單
+router.post('/create-order', shopController.postCreateOrder)
+
 // 刪除購物車
 router.post('/cart-delete-product', shopController.postCartDeleteProduct)
 

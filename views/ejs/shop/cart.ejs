@@ -13,7 +13,7 @@
         <div class="media-body">
           <h5><%= item.title %></h5>
           <p class="m-0"><%= item.description %></p>
-          <small><span>數量:<%= item.qty %></span>/$<%= item.price %></small>
+          <small><span>數量:<%= item.cartItem.quantity %></span>/$<%= item.price %></small>
           <form action="/cart-delete-product" method="post">
             <input type="hidden" name="productId" value="<%- item.id %>" />
             <button type="submit" class="btn btn-danger">刪除產品</button>
@@ -22,8 +22,13 @@
       </li>
       <hr></hr>
       <% }) %>
+      <form action="/create-order" method="post">
+        <button type="submit" class="btn btn-primary float-right">
+          生成訂單
+        </button>
+      </form>
     </ul>
-    <div>總價<%= totalPrice %></div>
+  
     <% } else { %>
     <h3>暫無購物車商品</h3>
     <% } %>

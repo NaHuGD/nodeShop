@@ -13,15 +13,15 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit
-
   // 判斷是否為編輯模式
   if (!editMode) {
     return res.redirect('/')
   }
 
   const productId = req.params.productId
-  // 查詢產品ID是否符合
-  Product.findById(productId, product => {
+  // 判斷尋找符合的產品
+  req.user.getProducts({ where: { id: productId } }).then(products => {
+    const product = products[0]
     if (!product) {
       return res.redirect('/')
     }
@@ -40,10 +40,13 @@ exports.postAddProduct = (req, res, next) => {
   const imgUrl = req.body.imgUrl
   const description = req.body.description
   const price = req.body.price
-  const product = new Product(title, imgUrl, description, price)
 
-  product.save()
-  res.redirect('/')
+  req.user
+    .createProduct({ title, imgUrl, description, price })
+    .then(result => {
+      res.redirect('/admin/products')
+    })
+    .catch(err => console.log('新增產品錯誤', err))
 }
 
 exports.postEditProduct = (req, res, next) => {
@@ -52,26 +55,34 @@ exports.postEditProduct = (req, res, next) => {
   const imgUrl = req.body.imgUrl
   const description = req.body.description
   const price = req.body.price
-  
-  const product = new Product(title, imgUrl, description, price)
-  product.save(productId)
-  res.redirect('/')
+
+  req.user.setProducts([1, 2]).then(user => {
+    // console.log(user)
+  })
+
+  Product.update({ title, imgUrl, description, price }, { where: { id: productId } })
+    .then(([num]) => {
+      res.redirect('/admin/products')
+    })
+    .catch(err => console.log('編輯錯誤', err))
 }
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId
 
-  Product.deleteById(productId)
-  res.redirect('/admin/products')
+  Product.destroy({ where: { id: productId } })
+    .then(result => {
+      res.redirect('/admin/products')
+    })
+    .catch(err => console.log('刪除資料異常', err))
 }
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll().then(products => {
-    // console.log('1',[products])
+  req.user.getProducts().then(products => {
     res.render('admin/products', {
       prods: products,
       title: '產品管理',
       activeProductManage: true
     })
   })
-}
+} 

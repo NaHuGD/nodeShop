@@ -6,7 +6,7 @@
   <%- include('../includes/navBar.ejs') %>
   <main class="container pt-3">
     <form 
-      action="/admin/<% if(editing){ %>edit-product/<% } else {%>add-product<% } %>"
+      action="/admin/<% if(editing){ %>edit-product<% } else {%>add-product<% } %>"
       method="post"
     >
       <div class="form-group">
@@ -54,7 +54,7 @@
         />
       </div>
       <% if(editing) { %>
-        <input type="hidden" name="productId" id="productId" value="<%= product.id %>" />
+        <input type="hidden" name="productId" id="productId" value="<%= product.id %>"/>
       <% } %>
       <button type="submit" class="btn btn-primary">
         <% if(editing) {%>
